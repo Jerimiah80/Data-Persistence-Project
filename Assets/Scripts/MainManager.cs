@@ -3,22 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class MainManager : MonoBehaviour
 {
+    public static MainManager Instance;
+
+    public static int savedScore;
+    
+
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text bestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
-    private int m_Points;
+    public int m_Points;
     
     private bool m_GameOver = false;
 
-    
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,10 +48,15 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+
+        BestScore.Instance.BestScoreUsed();
     }
 
     private void Update()
     {
+        
+
         if (!m_Started)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -51,26 +68,64 @@ public class MainManager : MonoBehaviour
 
                 Ball.transform.SetParent(null);
                 Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
+                
             }
+
+            
+
         }
         else if (m_GameOver)
-        {
+        {           
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+
+       
+
+
     }
 
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"Score : {m_Points}";        
+        print($"This is the updating points {m_Points}. And this is the saved score: {savedScore}");
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        if (savedScore < m_Points)
+        {
+            savedScore = m_Points;
+            BestScore.Instance.LoadUser();
+
+        }
+        print($"This is the new Saved score: {savedScore}");
+
+        BestScore.Instance.SaveInput();
+        BestScore.Instance.SaveUser();
+        
+
+
+
+
     }
-}
+      
+
+    
+
+
+    
+
+
+
+}//class
+
+

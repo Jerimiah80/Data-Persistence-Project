@@ -11,5 +11,13 @@ public class DeathZone : MonoBehaviour
     {
         Destroy(other.gameObject);
         Manager.GameOver();
+        BestScore.Instance.LoadInput();
+        
     }
-}
+
+
+
+}//Class
+
+
+
